@@ -1,4 +1,4 @@
-package ru.dsobin;
+package ru.dsobin.quiz;
 
 public class Main {
     public static void main(String[] args) {
