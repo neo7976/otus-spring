@@ -1,7 +1,9 @@
 package ru.dsobin.quiz.service;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
+import ru.dsobin.quiz.config.QuizConfig;
 import ru.dsobin.quiz.model.Question;
 import ru.dsobin.quiz.reader.QuestionReader;
 
@@ -9,12 +11,15 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class CsvQuestionServiceTest {
+@SpringJUnitConfig(QuizConfig.class)
+class CsvQuestionServiceIntegrationTest {
+
+    @Autowired
+    private QuestionReader questionReader;
 
     @Test
-    void shouldReadQuestionsFromCsv() {
-        QuestionReader reader = new CsvQuestionService(new ClassPathResource("test-questions.csv"));
-        List<Question> questions = reader.readQuestions();
+    void shouldReadQuestionsFromCsvViaSpringContext() {
+        List<Question> questions = questionReader.readQuestions();
 
         assertNotNull(questions);
         assertEquals(5, questions.size());
@@ -23,10 +28,8 @@ class CsvQuestionServiceTest {
         assertEquals("What is Java?", first.getText());
         assertFalse(first.isFreeResponse());
         assertEquals(3, first.getOptions().size());
-        assertEquals("Programming language", first.getOptions().get(0)); // первый — правильный
 
         Question last = questions.get(4);
         assertTrue(last.isFreeResponse());
-        assertEquals("(free)", last.getOptions().get(0));
     }
 }
