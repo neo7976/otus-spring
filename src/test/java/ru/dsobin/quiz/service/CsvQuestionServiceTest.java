@@ -12,21 +12,24 @@ import static org.junit.jupiter.api.Assertions.*;
 class CsvQuestionServiceTest {
 
     @Test
-    void shouldReadQuestionsFromCsv() {
+    void shouldReadQuestionsWithCorrectAnswerIndex() {
         QuestionReader reader = new CsvQuestionService(new ClassPathResource("test-questions.csv"));
         List<Question> questions = reader.readQuestions();
 
-        assertNotNull(questions);
-        assertEquals(5, questions.size());
+        assertEquals(3, questions.size());
 
-        Question first = questions.get(0);
-        assertEquals("What is Java?", first.getText());
-        assertFalse(first.isFreeResponse());
-        assertEquals(3, first.getOptions().size());
-        assertEquals("Programming language", first.getOptions().get(0)); // первый — правильный
+        Question q1 = questions.get(0);
+        assertFalse(q1.isFreeResponse());
+        assertEquals(0, q1.getCorrectAnswerIndex());
+        assertEquals("Programming language", q1.getOptions().get(0));
 
-        Question last = questions.get(4);
-        assertTrue(last.isFreeResponse());
-        assertEquals("(free)", last.getOptions().get(0));
+        Question q2 = questions.get(1);
+        assertFalse(q2.isFreeResponse());
+        assertEquals(2, q2.getCorrectAnswerIndex());
+        assertEquals("goto", q2.getOptions().get(2));
+
+        Question q3 = questions.get(2);
+        assertTrue(q3.isFreeResponse());
+        assertNull(q3.getCorrectAnswerIndex());
     }
 }

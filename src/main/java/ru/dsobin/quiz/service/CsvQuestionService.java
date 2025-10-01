@@ -26,16 +26,44 @@ public class CsvQuestionService implements QuestionReader {
                 new InputStreamReader(questionsResource.getInputStream(), StandardCharsets.UTF_8))) {
 
             String line;
+            int lineNumber = 0;
             while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(",", -1);
-                if (parts.length < 1) continue;
+                lineNumber++;
+                line = line.trim();
+                if (line.isEmpty()) continue;
 
-                String questionText = parts[0];
-                List<String> options = new ArrayList<>();
-                for (int i = 1; i < parts.length; i++) {
-                    options.add(parts[i].trim());
+                String[] parts = line.split(",", -1);
+                if (parts.length < 2) {
+                    throw new IllegalArgumentException("Invalid format at line " + lineNumber + ": expected at least 2 fields");
                 }
-                questions.add(new Question(questionText, options));
+
+                String questionText = parts[0].trim();
+                String secondField = parts[1].trim();
+
+                if ("(free)".equals(secondField)) {
+                    // Free response: no options beyond marker
+                    questions.add(new Question(questionText, List.of("(free)"), null));
+                } else {
+                    try {
+                        int correctIndex = Integer.parseInt(secondField);
+                        List<String> options = new ArrayList<>();
+                        // Опции начинаются с parts[2]
+                        for (int i = 2; i < parts.length; i++) {
+                            options.add(parts[i].trim());
+                        }
+                        if (options.isEmpty()) {
+                            throw new IllegalArgumentException("No answer options provided at line " + lineNumber);
+                        }
+                        if (correctIndex < 0 || correctIndex >= options.size()) {
+                            throw new IllegalArgumentException(
+                                    "Correct answer index " + correctIndex + " is out of bounds [0, " + (options.size() - 1) + "] at line " + lineNumber);
+                        }
+                        questions.add(new Question(questionText, options, correctIndex));
+                    } catch (NumberFormatException e) {
+                        throw new IllegalArgumentException(
+                                "Expected integer or '(free)' as second field at line " + lineNumber + ", got: " + secondField, e);
+                    }
+                }
             }
         } catch (IOException e) {
             throw new RuntimeException("Failed to read questions from CSV", e);

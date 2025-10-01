@@ -40,12 +40,10 @@ public class QuizService {
             if (q.isFreeResponse()) {
                 System.out.print("Your answer: ");
                 String answer = scanner.nextLine().trim();
-                // Свободный ответ считаем всегда правильным (или можно логику усложнить)
                 if (!answer.isEmpty()) {
                     correctAnswers++;
                 }
             } else {
-                // Выводим варианты
                 List<String> options = q.getOptions();
                 for (int j = 0; j < options.size(); j++) {
                     char optionLetter = (char) ('A' + j);
@@ -57,10 +55,10 @@ public class QuizService {
 
                 if (input.length() == 1) {
                     char choice = input.charAt(0);
-                    int index = choice - 'A';
-                    if (index >= 0 && index < options.size()) {
-                        // В нашем CSV первый вариант — правильный
-                        if (index == 0) {
+                    int userIndex = choice - 'A';
+                    if (userIndex >= 0 && userIndex < options.size()) {
+                        // Сравниваем с правильным индексом из вопроса
+                        if (userIndex == q.getCorrectAnswerIndex()) {
                             correctAnswers++;
                         }
                     }
