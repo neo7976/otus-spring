@@ -19,15 +19,41 @@ public class QuestionService {
         List<Question> questions = new ArrayList<>();
 
         for (String line : lines) {
-            String[] parts = line.split(",", -1);
-            if (parts.length < 1) continue;
+            if (line.trim().isEmpty()) continue;
 
-            String questionText = parts[0];
-            List<String> options = new ArrayList<>();
-            for (int i = 1; i < parts.length; i++) {
-                options.add(parts[i].trim());
+            String[] parts = line.split(",", -1); // -1 чтобы сохранить пустые концы
+            if (parts.length < 2) continue; // минимум: текст + индекс или (free)
+
+            String questionText = parts[0].trim();
+            String secondField = parts[1].trim();
+
+            // Определяем тип вопроса
+            if ("(free)".equalsIgnoreCase(secondField)) {
+                // Свободный ответ: нет опций, correctAnswerIndex = null
+                questions.add(new Question(questionText, List.of("(free)"), null));
+            } else {
+                // Обычный вопрос: второй элемент — индекс правильного ответа
+                try {
+                    int correctIndex = Integer.parseInt(secondField);
+                    List<String> options = new ArrayList<>();
+                    // Опции начинаются с parts[2]
+                    for (int i = 2; i < parts.length; i++) {
+                        options.add(parts[i].trim());
+                    }
+
+                    // Валидация: индекс в пределах
+                    if (correctIndex < 0 || correctIndex >= options.size()) {
+                        throw new IllegalArgumentException(
+                                "Invalid correct answer index " + correctIndex +
+                                        " for question: " + questionText + " (options count: " + options.size() + ")");
+                    }
+
+                    questions.add(new Question(questionText, options, correctIndex));
+                } catch (NumberFormatException e) {
+                    throw new IllegalArgumentException(
+                            "Expected correct answer index or '(free)', got: " + secondField, e);
+                }
             }
-            questions.add(new Question(questionText, options));
         }
 
         return questions;

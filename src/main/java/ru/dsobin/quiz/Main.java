@@ -1,18 +1,17 @@
 package ru.dsobin.quiz;
 
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import ru.dsobin.quiz.service.ConsoleOutputService;
-import ru.dsobin.quiz.service.QuestionService;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import ru.dsobin.quiz.config.AppConfig;
+import ru.dsobin.quiz.service.ConsoleIOService;
+import ru.dsobin.quiz.service.QuizService;
 
 public class Main {
     public static void main(String[] args) {
-        ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
+        try (var context = new AnnotationConfigApplicationContext(AppConfig.class)) {
+            QuizService quizService = context.getBean(QuizService.class);
+            ConsoleIOService io = new ConsoleIOService();
 
-        QuestionService questionService = context.getBean(QuestionService.class);
-        ConsoleOutputService consoleOutputService = context.getBean(ConsoleOutputService.class);
-
-        var questions = questionService.getQuestions();
-        consoleOutputService.printQuestions(questions);
+            quizService.conductQuiz(io);
+        }
     }
 }

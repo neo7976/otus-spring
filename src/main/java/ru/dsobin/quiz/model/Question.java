@@ -6,11 +6,13 @@ public class Question {
     private final String text;
     private final List<String> options;
     private final boolean isFreeResponse;
+    private final Integer correctAnswerIndex;
 
-    public Question(String text, List<String> options) {
+    public Question(String text, List<String> options, Integer correctAnswerIndex) {
         this.text = text;
         this.options = options;
-        this.isFreeResponse = options.size() == 1 && "(free)".equals(options.get(0));
+        this.correctAnswerIndex = correctAnswerIndex;
+        this.isFreeResponse = correctAnswerIndex == null;
     }
 
     public String getText() {
@@ -23,6 +25,10 @@ public class Question {
 
     public boolean isFreeResponse() {
         return isFreeResponse;
+    }
+
+    public Integer getCorrectAnswerIndex() {
+        return correctAnswerIndex;
     }
 
     @Override
