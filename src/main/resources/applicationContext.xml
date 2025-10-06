@@ -5,14 +5,22 @@
         http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <!-- Захардкоженный ресурс -->
+    <!-- Ресурс -->
     <bean id="questionsResource" class="org.springframework.core.io.ClassPathResource">
         <constructor-arg value="questions.csv"/>
     </bean>
 
-    <!-- Сервис чтения вопросов -->
-    <bean id="questionReader" class="ru.dsobin.quiz.service.CsvQuestionService">
+    <!-- DAO: читает строки из CSV -->
+    <bean id="questionDao" class="ru.dsobin.quiz.dao.CsvQuestionDao">
         <constructor-arg ref="questionsResource"/>
     </bean>
+
+    <!-- Сервис: парсит строки в Question -->
+    <bean id="questionService" class="ru.dsobin.quiz.service.QuestionService">
+        <constructor-arg ref="questionDao"/>
+    </bean>
+
+    <!-- Сервис: вывод в консоль -->
+    <bean id="consoleOutputService" class="ru.dsobin.quiz.service.ConsoleOutputService"/>
 
 </beans>

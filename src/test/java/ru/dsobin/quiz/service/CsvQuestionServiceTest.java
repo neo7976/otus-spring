@@ -1,22 +1,30 @@
 package ru.dsobin.quiz.service;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
+import ru.dsobin.quiz.dao.CsvQuestionDao;
 import ru.dsobin.quiz.model.Question;
-import ru.dsobin.quiz.reader.QuestionReader;
 
 import java.util.List;
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CsvQuestionServiceTest {
 
     @Test
-    void shouldReadQuestionsFromCsv() {
-        QuestionReader reader = new CsvQuestionService(new ClassPathResource("questions.csv"));
-        List<Question> questions = reader.readQuestions();
+    void shouldReadAndParseQuestionsFromCsv() {
+        // Arrange
+        var resource = new ClassPathResource("questions.csv");
+        var dao = new CsvQuestionDao(resource);
+        var service = new QuestionService(dao);
 
+        // Act
+        List<Question> questions = service.getQuestions();
+
+        // Assert
         assertNotNull(questions);
         assertEquals(5, questions.size());
 
