@@ -1,5 +1,7 @@
 package ru.dsobin.quiz.service;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
 import ru.dsobin.quiz.dao.CsvQuestionDao;
@@ -14,12 +16,24 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CsvQuestionServiceTest {
 
+    private QuestionService service;
+    private CsvQuestionDao dao;
+
+    @BeforeEach
+    void beforeEach() {
+        dao = new CsvQuestionDao(new ClassPathResource("questions-test.csv"));
+        service = new QuestionService(dao);
+    }
+
+
+    @AfterEach
+    void tearDown() {
+        dao = null;
+        service = null;
+    }
+
     @Test
     void shouldReadAndParseQuestionsFromCsv() {
-        // Arrange
-        var resource = new ClassPathResource("questions.csv");
-        var dao = new CsvQuestionDao(resource);
-        var service = new QuestionService(dao);
 
         // Act
         List<Question> questions = service.getQuestions();

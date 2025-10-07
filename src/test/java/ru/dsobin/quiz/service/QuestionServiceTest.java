@@ -1,5 +1,7 @@
 package ru.dsobin.quiz.service;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
@@ -16,11 +18,25 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class QuestionServiceTest {
 
+    private QuestionService service;
+    private CsvQuestionDao dao;
+
+    @BeforeEach
+    void beforeEach() {
+        dao = new CsvQuestionDao(new ClassPathResource("questions-test.csv"));
+        service = new QuestionService(dao);
+    }
+
+
+    @AfterEach
+    void tearDown() {
+        dao = null;
+        service = null;
+    }
+
     @Test
     @DisplayName("Should parse valid CSV into Questions with correct indices")
     void shouldParseValidCsv() {
-        var dao = new CsvQuestionDao(new ClassPathResource("questions-test.csv"));
-        var service = new QuestionService(dao);
 
         List<Question> questions = service.getQuestions();
 
@@ -50,8 +66,8 @@ class QuestionServiceTest {
     @Test
     @DisplayName("Should throw exception on invalid correct answer index")
     void shouldFailOnInvalidIndex() {
-        var dao = new CsvQuestionDao(new ClassPathResource("questions-invalid.csv"));
-        var service = new QuestionService(dao);
+        dao = new CsvQuestionDao(new ClassPathResource("questions-invalid.csv"));
+        service = new QuestionService(dao);
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
