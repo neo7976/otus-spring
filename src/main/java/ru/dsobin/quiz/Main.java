@@ -9,7 +9,7 @@ public class Main {
     public static void main(String[] args) {
         try (var context = new AnnotationConfigApplicationContext(AppConfig.class)) {
             QuizService quizService = context.getBean(QuizService.class);
-            ConsoleIOService io = new ConsoleIOService();
+            ConsoleIOService io = context.getBean(ConsoleIOService.class);
 
             quizService.conductQuiz(io);
         }

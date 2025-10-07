@@ -1,7 +1,10 @@
 package ru.dsobin.quiz.service;
 
+import org.springframework.stereotype.Component;
+
 import java.util.Scanner;
 
+@Component
 public class ConsoleIOService {
 
     private final Scanner scanner = new Scanner(System.in);
